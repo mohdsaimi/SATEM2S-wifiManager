@@ -40,7 +40,6 @@ char serverAdd [] = "apiv2.favoriot.com";
 String apikey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1vaGRzYWltaSIsInJlYWRfd3JpdGUiOnRydWUsImlhdCI6MTU4ODY2MzczMH0.OKEzyp3XUAmV3swaxnP4FiVMUHxqYFhCfLyxYXPfAiQ";
 WiFiClient client;
 
-//maklumat LED
 float suhu,suhu_avg=0;
 int LED4 = 12; //merah
 int LED5 = 14; //hijau
@@ -62,6 +61,8 @@ float distance_v[1];
 const int AVERAGE_OF = 50;
 const float MCU_VOLTAGE = 3.3;//5.0
 
+
+//gfdhdhgg hjrjy
 void setup() {
   pinMode(LED1, OUTPUT);
   pinMode(LED2, OUTPUT);
