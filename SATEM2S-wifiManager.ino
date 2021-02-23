@@ -51,7 +51,7 @@ int LED2 = 25; //hijau
 int LED3 = 33; //biru
 int no_rfid = 0;
 int loopagain = 0;
-int lokasi = 1001;
+int lokasi = 1010; //lokasi device..nombor lokasi berbeza mengikut device
 float jarak = 0.0;
 
 const double T_offset=0.00; //adjustment parameter for sensor calibration. default 0.00
@@ -148,14 +148,14 @@ mula:
   lcd.clear();
   loopagain = 0;
   //while ((distance[0] > 3.5) || (distance[0] < 3.2)) { //2-3cm
-  while ((distance[0] > 3.5) || (distance[0] < 3.3)) {
+  while ((distance[0] > 2.0) || (distance[0] < 1.5)) {  //2.5 -3.0
     hijau1_on();
     tone(BUZZER_PIN, NOTE_D4, 100, BUZZER_CHANNEL);
     noTone(BUZZER_PIN, BUZZER_CHANNEL);
     lcd.setCursor(0, 0);
     //baca_jarak();
     readDistance(0);
-    lcd.print("Distance 3-3.5cm");
+    lcd.print("Distance 1.5-2.0cm");
     lcd.setCursor(4, 1);
     lcd.print(distance[0]);
     lcd.print("cm");
@@ -227,7 +227,7 @@ mula:
   
   //send data to favoriot
   Serial.println("Sending data to favoriot....");
-  send_data_favoriot();
+  //send_data_favoriot();
   //end send data to favoriot
   
   no_rfid = 0;
