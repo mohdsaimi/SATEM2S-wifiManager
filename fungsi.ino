@@ -102,7 +102,8 @@ void send_data_database() {
                            + "&value2=" + String(myStr_data2) + "&value3=" + String(myStr_data3) + "";
   */
   String httpRequestData = "api_key=" + String(apiKeyValue) + "&suhu=" + float(suhu) + "&rfid=" + int(no_rfid) + "&lokasi=" + String(lokasi) + "";
-
+  //String httpRequestData = httpRequestData = "api_key_value=" + String(apiKeyValue) + "&suhu=" + float(suhu) + "&rfid=" + int(no_rfid) + "&lokasi=" + String(lokasi) + "";
+  
   Serial.print("httpRequestData: ");
   Serial.println(httpRequestData);
 
@@ -200,4 +201,32 @@ void check_suhu(){
     //do nothing
   }
   
+}
+
+
+void send_data_json() {
+  HTTPClient http;
+  http.begin(serverName);
+  http.addHeader("Content-Type", "application/json");
+
+  // Prepare your HTTP POST request data
+  
+  String httpRequestData = "{\"api_key_value\":\"" + apiKeyValue + "\",\"suhu\":\"" + suhu + "\",\"rfid\":\"" + no_rfid + "\",\"lokasi\":\"" + lokasi + "\"}";
+
+  Serial.print("httpRequestData: ");
+  Serial.println(httpRequestData);
+
+  // Send HTTP POST request
+  int httpResponseCode = http.POST(httpRequestData);
+
+
+  if (httpResponseCode > 0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+  } else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
 }

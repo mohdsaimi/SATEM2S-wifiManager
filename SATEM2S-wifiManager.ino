@@ -31,7 +31,8 @@ Rdm6300 rdm6300;
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 Adafruit_MLX90614 mlx = Adafruit_MLX90614();
 
-const char* serverName = "http://20.1.11.197/satem2s/post_data_satem2s.php";
+const char* serverName = "http://20.1.1.7/api/add";
+//const char* serverName = "http://20.1.11.197/satem2s/post_data_satem2s.php";
 String apiKeyValue = "5a1m1th3gr34t_4Lw4y5pr0t3ct3d8yth34Lm19hty";
 
 //Maklumat Akaun Favoriot
@@ -42,7 +43,7 @@ WiFiClient client;
 
 //maklumat LED Status Device
 
-float suhu,suhu_avg=0;
+float suhu, suhu_avg = 0;
 int LED4 = 12; //merah
 int LED5 = 14; //hijau
 int LED6 = 27; //biru
@@ -51,11 +52,11 @@ int LED2 = 25; //hijau
 int LED3 = 33; //biru
 int no_rfid = 0;
 int loopagain = 0;
-int lokasi = 1010; //lokasi device..nombor lokasi berbeza mengikut device
+int lokasi = 1003; //lokasi device..nombor lokasi berbeza mengikut device
 float jarak = 0.0;
 
-const double T_offset=0.00; //adjustment parameter for sensor calibration. default 0.00
-const double Obj_Emiss=0.97; // se more in https://www.thermoworks.com/emissivity-table
+const double T_offset = 0.00; //adjustment parameter for sensor calibration. default 0.00
+const double Obj_Emiss = 0.97; // se more in https://www.thermoworks.com/emissivity-table
 
 const int sensorPin[] = {34};
 float distance[1];
@@ -90,14 +91,14 @@ void setup() {
   pinMode(TRIGGER_PIN, INPUT_PULLUP);
 
   lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("---Not Ready---");
-    lcd.setCursor(0, 1);
-    lcd.print("  192.168.4.1");
-    hijau1_off();
-    hijau2_off();
-    ticker.attach(0.6, tick);
-    tone(BUZZER_PIN, NOTE_C4, 1000, BUZZER_CHANNEL);
+  lcd.setCursor(0, 0);
+  lcd.print("---Not Ready---");
+  lcd.setCursor(0, 1);
+  lcd.print("  192.168.4.1");
+  hijau1_off();
+  hijau2_off();
+  ticker.attach(0.6, tick);
+  tone(BUZZER_PIN, NOTE_C4, 1000, BUZZER_CHANNEL);
 
   WiFiManager wm;
   bool res;
@@ -173,15 +174,15 @@ mula:
 
   lcd.clear();
   baca_suhu();
-  suhu_avg=0;
+  suhu_avg = 0;
   for (int x = 0; x < 20; x++) {
     baca_suhu();
     delay(20);
-    suhu_avg=suhu_avg+suhu;
+    suhu_avg = suhu_avg + suhu;
   }
 
-  suhu=suhu_avg/20;
-  
+  suhu = suhu_avg / 20;
+
   //check_suhu();
   hijau1_on();
   lcd.setCursor(0, 0);
@@ -190,6 +191,49 @@ mula:
   Serial.println(suhu);
   rdm6300.begin(RDM6300_RX_PIN);
   delay (500);
+
+  /////
+  if (suhu >= 37.50) {
+    for (int x = 0; x <= 10; x++) {
+      hijau1_off();
+      hijau2_off();
+      lcd.setCursor(0, 0);
+      lcd.print("  Suhu Tinggi");
+      lcd.setCursor(0, 1);
+      lcd.print("Temp :");
+      lcd.print(suhu);
+      merah1_on();
+      merah2_on();
+      tone(BUZZER_PIN, NOTE_E4, 300, BUZZER_CHANNEL);
+      noTone(BUZZER_PIN, BUZZER_CHANNEL);
+      merah1_off();
+      merah2_off();
+      tone(BUZZER_PIN, NOTE_G4, 300, BUZZER_CHANNEL);
+      noTone(BUZZER_PIN, BUZZER_CHANNEL);
+    }
+    goto mula;
+  } else if (suhu <= 33.50) {
+    for (int x = 0; x <= 10; x++) {
+      hijau1_off();
+      hijau2_off();
+      lcd.setCursor(0, 0);
+      lcd.print("  Suhu Rendah");
+      lcd.setCursor(0, 1);
+      lcd.print("Temp :");
+      lcd.print(suhu);
+      merah1_on();
+      merah2_on();
+      tone(BUZZER_PIN, NOTE_E4, 300, BUZZER_CHANNEL);
+      noTone(BUZZER_PIN, BUZZER_CHANNEL);
+      merah1_off();
+      merah2_off();
+      tone(BUZZER_PIN, NOTE_G4, 300, BUZZER_CHANNEL);
+      noTone(BUZZER_PIN, BUZZER_CHANNEL);
+    }
+    goto mula;
+  }
+
+  /////
 
   loopagain = 0;
   while (no_rfid == 0) {
@@ -222,18 +266,19 @@ mula:
 
   //send data to database
   Serial.println("Sending data to database....");
-  send_data_database();
+  send_data_json();
+  //send_data_database();
   //end send data to database
-  
+
   //send data to favoriot
-  Serial.println("Sending data to favoriot....");
+  //Serial.println("Sending data to favoriot....");
   //send_data_favoriot();
   //end send data to favoriot
-  
+
   no_rfid = 0;
 
-  while (1) {
-    delay (5000);
-    break;
-  }
+  //while (1) {
+  //  delay (5000);
+  //  break;
+  //}
 }
